@@ -10,6 +10,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
+
 /**
  * User: Z J Wu Date: 14-3-3 Time: 下午3:52 Package: com.elex.bigdata.nettyserver
  */

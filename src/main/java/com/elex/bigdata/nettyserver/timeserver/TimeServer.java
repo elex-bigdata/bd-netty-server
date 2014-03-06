@@ -1,4 +1,4 @@
-package com.elex.bigdata.nettyserver;
+package com.elex.bigdata.nettyserver.timeserver;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -10,16 +10,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
 
-import java.math.BigDecimal;
-
 /**
  * User: Z J Wu Date: 14-3-3 Time: 下午3:52 Package: com.elex.bigdata.nettyserver
  */
-public class DiscardServer {
-  private static final Logger LOGGER = Logger.getLogger(DiscardServer.class);
+public class TimeServer {
+  private static final Logger LOGGER = Logger.getLogger(TimeServer.class);
   private int port;
 
-  public DiscardServer(int port) {
+  public TimeServer(int port) {
     this.port = port;
   }
 
@@ -34,7 +32,7 @@ public class DiscardServer {
       b.childHandler(new ChannelInitializer<SocketChannel>() {
         @Override
         public void initChannel(SocketChannel ch) throws Exception {
-          ch.pipeline().addLast(new DiscardServerHandler());
+          ch.pipeline().addLast(new TimeServerHandler());
         }
       });
       b.option(ChannelOption.SO_BACKLOG, 128);
@@ -48,7 +46,7 @@ public class DiscardServer {
   }
 
   public static void main(String[] args) throws Exception {
-    new DiscardServer(9527).startServer();
-    LOGGER.info("[DiscardServer]: Server started.");
+    new TimeServer(9527).startServer();
+    LOGGER.info("[echoserver]: Server started.");
   }
 }

@@ -9,6 +9,6 @@ public class NettyServerUtils {
   public static final BasicRedisOperation REDIS_OPERATION = new BasicRedisOperation("/redis.site.properties");
 
   public static String extractURI2UID(String uri) {
-    return uri.substring(1, uri.length());
+    return uri.substring(3, uri.length());
   }
 }

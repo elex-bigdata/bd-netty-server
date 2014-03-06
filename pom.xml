@@ -8,6 +8,26 @@
   <artifactId>bd-netty-server</artifactId>
   <version>1.0</version>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.4</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>com.elex.bigdata.nettyserver.http.HttpPGetServer</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <dependencies>
     <!-- JUnit -->

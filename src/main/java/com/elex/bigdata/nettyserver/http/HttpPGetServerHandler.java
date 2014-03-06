@@ -15,6 +15,7 @@
  */
 package com.elex.bigdata.nettyserver.http;
 
+import static com.elex.bigdata.nettyserver.Errors.ERROR_RESULT;
 import static com.elex.bigdata.nettyserver.Errors.NO_SUCH_P_FOR_THIS_USER;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
@@ -40,6 +41,38 @@ import org.apache.commons.lang3.StringUtils;
 
 public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
 
+  private boolean isValid(String uri) {
+    return StringUtils.isNotBlank(uri) && !NettyServerConstants.USELESS_URI.equals(uri);
+  }
+
+  private static String extractResult(String result) {
+    if (StringUtils.isBlank(result)) {
+      return null;
+    }
+    char dot = '.', sep = ',';
+    int factor = 3;
+    int len = result.length();
+    if (len % 3 != 0) {
+      return null;
+    }
+    StringBuilder sb = new StringBuilder();
+    char type = result.charAt(0);
+    sb.append(type);
+    sb.append(dot);
+    sb.append(result.charAt(1));
+    sb.append(result.charAt(2));
+
+    for (int i = 1; i < len / factor; i++) {
+      sb.append(sep);
+      type = result.charAt(i * factor);
+      sb.append(type);
+      sb.append(dot);
+      sb.append(result.charAt(i * factor + 1));
+      sb.append(result.charAt(i * factor + 2));
+    }
+    return sb.toString();
+  }
+
   @Override
   public void channelReadComplete(ChannelHandlerContext ctx) {
     ctx.flush();
@@ -51,24 +84,27 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
       HttpRequest req = (HttpRequest) msg;
 
       String uri = req.getUri();
-      if (NettyServerConstants.USELESS_URI.equals(uri)) {
-        return;
-      }
-
       if (is100ContinueExpected(req)) {
         ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
       }
       boolean keepAlive = isKeepAlive(req);
 
-      String uid = NettyServerUtils.extractURI2UID(uri);
-      String md5UID = BDMD5.getInstance().toMD5(uid);
-      String result = NettyServerUtils.REDIS_OPERATION.get(md5UID);
-
       byte[] bytes;
-      if (StringUtils.isBlank(result)) {
-        bytes = NO_SUCH_P_FOR_THIS_USER.getReturnContentBytes();
+      if (isValid(uri)) {
+        String uid = NettyServerUtils.extractURI2UID(uri);
+        String md5UID = BDMD5.getInstance().toMD5(uid);
+        String result = NettyServerUtils.REDIS_OPERATION.get(md5UID);
+        if (StringUtils.isBlank(result)) {
+          bytes = NO_SUCH_P_FOR_THIS_USER.getReturnContentBytes();
+        } else {
+          try {
+            bytes = extractResult(result).getBytes();
+          } catch (Exception e) {
+            bytes = ERROR_RESULT.getReturnContentBytes();
+          }
+        }
       } else {
-        bytes = result.getBytes();
+        bytes = ERROR_RESULT.getReturnContentBytes();
       }
 
       FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(bytes));
@@ -89,4 +125,5 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
     cause.printStackTrace();
     ctx.close();
   }
+
 }

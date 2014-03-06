@@ -21,6 +21,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request in a pretty plaintext form.
@@ -52,6 +53,10 @@ public class HttpPGetServer {
   }
 
   public static void main(String[] args) throws Exception {
-    new HttpPGetServer(80).run();
+    int port = 80;
+    if (ArrayUtils.isNotEmpty(args)) {
+      port = Integer.parseInt(args[0]);
+    }
+    new HttpPGetServer(port).run();
   }
 }

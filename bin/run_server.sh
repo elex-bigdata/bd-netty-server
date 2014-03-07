@@ -11,4 +11,4 @@ else
   port=${1}
 fi
 
-${java_bin}/java -jar ${jar_file} ${port}
+${java_bin}/java -jar ${jar_file} ${port} &

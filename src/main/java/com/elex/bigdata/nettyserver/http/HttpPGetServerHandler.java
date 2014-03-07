@@ -38,8 +38,11 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
+
+  private static final Logger LOGGER = Logger.getLogger(HttpPGetServerHandler.class);
 
   private boolean isValid(String uri) {
     return StringUtils.isNotBlank(uri) && !NettyServerConstants.USELESS_URI.equals(uri);
@@ -100,10 +103,12 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
           try {
             bytes = extractResult(result).getBytes();
           } catch (Exception e) {
+            LOGGER.warn("Invalid result - " + result);
             bytes = ERROR_RESULT.getReturnContentBytes();
           }
         }
       } else {
+        LOGGER.warn("Invalid url - " + uri);
         bytes = ERROR_RESULT.getReturnContentBytes();
       }
 

@@ -22,11 +22,15 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request in a pretty plaintext form.
  */
 public class HttpPGetServer {
+
+  private static final Logger LOGGER = Logger.getLogger(HttpPGetServer.class);
 
   private final int port;
 
@@ -44,6 +48,7 @@ public class HttpPGetServer {
       b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
        .childHandler(new HttpPGetServerInitializer());
 
+      LOGGER.info("Server(" + port + ") started.");
       Channel ch = b.bind(port).sync().channel();
       ch.closeFuture().sync();
     } finally {
@@ -57,6 +62,7 @@ public class HttpPGetServer {
     if (ArrayUtils.isNotEmpty(args)) {
       port = Integer.parseInt(args[0]);
     }
+    NDC.push(String.valueOf(port));
     new HttpPGetServer(port).run();
   }
 }

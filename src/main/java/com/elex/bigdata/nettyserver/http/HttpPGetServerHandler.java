@@ -92,7 +92,7 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
         ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
       }
       boolean keepAlive = isKeepAlive(req);
-      LOGGER.info("[" + CURRENT_PORT + "] uri - " + uri);
+//      LOGGER.info("[" + CURRENT_PORT + "] uri - " + uri);
       byte[] bytes;
       if (isValid(uri)) {
         String uid;

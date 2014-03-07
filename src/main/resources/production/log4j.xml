@@ -7,7 +7,7 @@
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
-             value="%d{yyyyMMddHHmmss} %-5p%c{2} [%X]: %m%n" />
+             value="%d{yyyyMMddHHmmss} %-5p%c{2} [%x]: %m%n" />
     </layout>
   </appender>
 
@@ -19,7 +19,7 @@
     <param name="Threshold" value="info" />
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyyMMddHHmmss} %-5p%c{2} [%X]: %m%n" />
+      <param name="ConversionPattern" value="%d{yyyyMMddHHmmss} %-5p%c{2} [%x]: %m%n" />
     </layout>
   </appender>
 

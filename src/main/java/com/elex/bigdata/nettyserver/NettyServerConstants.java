@@ -8,6 +8,6 @@ public class NettyServerConstants {
 
   public static final String NO_SUCH_P_FOR_THIS_USER = "0";
 
-  public static int NDC_PORT;
+  public static int CURRENT_PORT;
 
 }

@@ -17,6 +17,7 @@ package com.elex.bigdata.nettyserver.http;
 
 import static com.elex.bigdata.nettyserver.Errors.ERROR_RESULT;
 import static com.elex.bigdata.nettyserver.Errors.NO_SUCH_P_FOR_THIS_USER;
+import static com.elex.bigdata.nettyserver.NettyServerConstants.CURRENT_PORT;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
@@ -91,7 +92,7 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
         ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
       }
       boolean keepAlive = isKeepAlive(req);
-
+      LOGGER.info("[" + CURRENT_PORT + "] uri - " + uri);
       byte[] bytes;
       if (isValid(uri)) {
         String uid;
@@ -105,16 +106,16 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
             try {
               bytes = extractResult(result).getBytes();
             } catch (Exception e) {
-              LOGGER.warn("Invalid result - " + result);
+              LOGGER.warn("[" + CURRENT_PORT + "] Invalid result - " + result);
               bytes = ERROR_RESULT.getReturnContentBytes();
             }
           }
         } catch (Exception e) {
           bytes = ERROR_RESULT.getReturnContentBytes();
-          LOGGER.warn("Invalid uid - " + uri);
+          LOGGER.warn("[" + CURRENT_PORT + "]Invalid uid - " + uri);
         }
       } else {
-        LOGGER.warn("Invalid url - " + uri);
+        LOGGER.warn("[" + CURRENT_PORT + "]Invalid url - " + uri);
         bytes = ERROR_RESULT.getReturnContentBytes();
       }
 

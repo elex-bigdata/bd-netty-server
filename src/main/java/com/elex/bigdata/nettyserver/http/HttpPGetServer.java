@@ -15,6 +15,7 @@
  */
 package com.elex.bigdata.nettyserver.http;
 
+import com.elex.bigdata.nettyserver.NettyServerConstants;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -23,7 +24,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request in a pretty plaintext form.
@@ -62,7 +62,7 @@ public class HttpPGetServer {
     if (ArrayUtils.isNotEmpty(args)) {
       port = Integer.parseInt(args[0]);
     }
-    NDC.push(String.valueOf(port));
+    NettyServerConstants.CURRENT_PORT = port;
     new HttpPGetServer(port).run();
   }
 }

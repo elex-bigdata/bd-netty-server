@@ -94,18 +94,24 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
 
       byte[] bytes;
       if (isValid(uri)) {
-        String uid = NettyServerUtils.extractURI2UID(uri);
-        String md5UID = BDMD5.getInstance().toMD5(uid);
-        String result = NettyServerUtils.REDIS_OPERATION.get(md5UID);
-        if (StringUtils.isBlank(result)) {
-          bytes = NO_SUCH_P_FOR_THIS_USER.getReturnContentBytes();
-        } else {
-          try {
-            bytes = extractResult(result).getBytes();
-          } catch (Exception e) {
-            LOGGER.warn("Invalid result - " + result);
-            bytes = ERROR_RESULT.getReturnContentBytes();
+        String uid;
+        try {
+          uid = NettyServerUtils.extractURI2UID(uri);
+          String md5UID = BDMD5.getInstance().toMD5(uid);
+          String result = NettyServerUtils.REDIS_OPERATION.get(md5UID);
+          if (StringUtils.isBlank(result)) {
+            bytes = NO_SUCH_P_FOR_THIS_USER.getReturnContentBytes();
+          } else {
+            try {
+              bytes = extractResult(result).getBytes();
+            } catch (Exception e) {
+              LOGGER.warn("Invalid result - " + result);
+              bytes = ERROR_RESULT.getReturnContentBytes();
+            }
           }
+        } catch (Exception e) {
+          bytes = ERROR_RESULT.getReturnContentBytes();
+          LOGGER.warn("Invalid uid - " + uri);
         }
       } else {
         LOGGER.warn("Invalid url - " + uri);

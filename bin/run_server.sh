@@ -1,7 +1,7 @@
 #!/bin/sh
 
 code_home=/home/hadoop/git_project_home/bd-netty-server
-jar_file=${code_home}/target/BigDataPGetNettyServer-jar-with-dependencies.jar.jar
+jar_file=${code_home}/target/BigDataPGetNettyServer-jar-with-dependencies.jar
 java_bin=/usr/java/jdk1.7.0_45/bin
 
 if [ "" = "$1" ];then

@@ -92,7 +92,6 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
         ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
       }
       boolean keepAlive = isKeepAlive(req);
-//      LOGGER.info("[" + CURRENT_PORT + "] uri - " + uri);
       byte[] bytes;
       if (isValid(uri)) {
         String uid;
@@ -101,8 +100,10 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
           String md5UID = BDMD5.getInstance().toMD5(uid);
           String result = NettyServerUtils.REDIS_OPERATION.get(md5UID);
           if (StringUtils.isBlank(result)) {
+            LOGGER.info("[" + CURRENT_PORT + "] [NEW] - " + uid);
             bytes = NO_SUCH_P_FOR_THIS_USER.getReturnContentBytes();
           } else {
+            LOGGER.info("[" + CURRENT_PORT + "] [OLD] - " + uid);
             try {
               bytes = extractResult(result).getBytes();
             } catch (Exception e) {

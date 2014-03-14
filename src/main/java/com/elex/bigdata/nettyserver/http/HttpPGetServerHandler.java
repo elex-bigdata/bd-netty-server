@@ -49,6 +49,10 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
     return StringUtils.isNotBlank(uri) && !NettyServerConstants.USELESS_URI.equals(uri);
   }
 
+  private static int char2Int(char[] chars) {
+    return Integer.valueOf(new String(chars), 16).intValue();
+  }
+
   private static String extractResult(String result) {
     if (StringUtils.isBlank(result)) {
       return null;
@@ -61,18 +65,21 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
     }
     StringBuilder sb = new StringBuilder();
     char type = result.charAt(0);
+    char[] chars = new char[2];
     sb.append(type);
     sb.append(dot);
-    sb.append(result.charAt(1));
-    sb.append(result.charAt(2));
+    chars[0] = result.charAt(1);
+    chars[1] = result.charAt(2);
+    sb.append(char2Int(chars));
 
     for (int i = 1; i < len / factor; i++) {
       sb.append(sep);
       type = result.charAt(i * factor);
       sb.append(type);
       sb.append(dot);
-      sb.append(result.charAt(i * factor + 1));
-      sb.append(result.charAt(i * factor + 2));
+      chars[0] = result.charAt(i * factor + 1);
+      chars[1] = result.charAt(i * factor + 2);
+      sb.append(char2Int(chars));
     }
     return sb.toString();
   }
@@ -137,6 +144,11 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     cause.printStackTrace();
     ctx.close();
+  }
+
+  public static void main(String[] args) {
+    String result = "z3fa03b05";
+    System.out.println(extractResult(result));
   }
 
 }

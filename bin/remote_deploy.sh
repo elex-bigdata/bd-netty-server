@@ -6,13 +6,13 @@ jar_file=${code_home}/target/BigDataPGetNettyServer-jar-with-dependencies.jar
 target_path=/home/hadoop/netty_server
 
 echo "Remote copying..."
-scp jar_file hadoop@node0:${target_path}
+scp ${jar_file} hadoop@node0:${target_path}
 echo "Node0 copied"
-scp jar_file hadoop@node1:${target_path}
+scp ${jar_file} hadoop@node1:${target_path}
 echo "Node1 copied"
-scp jar_file hadoop@node2:${target_path}
+scp ${jar_file} hadoop@node2:${target_path}
 echo "Node2 copied"
-scp jar_file hadoop@node3:${target_path}
+scp ${jar_file} hadoop@node3:${target_path}
 echo "Node3 copied"
 echo "Remote copying is done. Remote killing..."
 

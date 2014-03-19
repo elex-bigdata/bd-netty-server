@@ -21,10 +21,17 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 
 public class HttpPGetServerInitializer extends ChannelInitializer<SocketChannel> {
+
+  private String sequencedCategory;
+
+  public HttpPGetServerInitializer(String sequencedCategory) {
+    this.sequencedCategory = sequencedCategory;
+  }
+
   @Override
   public void initChannel(SocketChannel ch) throws Exception {
     ChannelPipeline p = ch.pipeline();
     p.addLast("codec", new HttpServerCodec());
-    p.addLast("handler", new HttpPGetServerHandler());
+    p.addLast("handler", new HttpPGetServerHandler(sequencedCategory));
   }
 }

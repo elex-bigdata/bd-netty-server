@@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -33,9 +34,11 @@ public class HttpPGetServer {
   private static final Logger LOGGER = Logger.getLogger(HttpPGetServer.class);
 
   private final int port;
+  private final String sequencedCategories;
 
-  public HttpPGetServer(int port) {
+  public HttpPGetServer(int port, String sequencedCategories) {
     this.port = port;
+    this.sequencedCategories = sequencedCategories;
   }
 
   public void run() throws Exception {
@@ -46,7 +49,7 @@ public class HttpPGetServer {
       ServerBootstrap b = new ServerBootstrap();
       b.option(ChannelOption.SO_BACKLOG, 1024);
       b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-       .childHandler(new HttpPGetServerInitializer());
+       .childHandler(new HttpPGetServerInitializer(sequencedCategories));
 
       LOGGER.info("Server(" + port + ") started.");
       Channel ch = b.bind(port).sync().channel();
@@ -55,14 +58,19 @@ public class HttpPGetServer {
       bossGroup.shutdownGracefully();
       workerGroup.shutdownGracefully();
     }
+
   }
 
   public static void main(String[] args) throws Exception {
-    int port = 80;
-    if (ArrayUtils.isNotEmpty(args)) {
-      port = Integer.parseInt(args[0]);
+    if (ArrayUtils.isEmpty(args)) {
+      throw new Exception("Parameters is not enough(P1=Port, P2=String of sequenced categories).");
+    }
+    int port = Integer.parseInt(args[0]);
+    String sequencedCategories = StringUtils.trimToNull(args[1]);
+    if (StringUtils.isBlank(sequencedCategories)) {
+      throw new Exception("Sequenced categories must be assigned.");
     }
     NettyServerConstants.CURRENT_PORT = port;
-    new HttpPGetServer(port).run();
+    new HttpPGetServer(port, sequencedCategories).run();
   }
 }

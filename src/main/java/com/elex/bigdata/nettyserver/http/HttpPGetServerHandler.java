@@ -43,43 +43,74 @@ import org.apache.log4j.Logger;
 
 public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
 
+  private final String EMPTY_CATEGORY_RESULT = "00";
+
+  private char[] sequencedCategories;
+
+  public HttpPGetServerHandler(String sequencedCatetoriesString) {
+    this.sequencedCategories = sequencedCatetoriesString.toCharArray();
+  }
+
   private static final Logger LOGGER = Logger.getLogger(HttpPGetServerHandler.class);
 
   private boolean isValid(String uri) {
     return StringUtils.isNotBlank(uri) && !NettyServerConstants.USELESS_URI.equals(uri);
   }
 
-  private static int char2Int(char[] chars) {
+  private int char2Int(char[] chars) {
     return Integer.valueOf(new String(chars), 16).intValue();
   }
 
-  private static String extractResult(String result) {
+  private String extractResult(String result) {
     if (StringUtils.isBlank(result)) {
       return null;
     }
-    char dot = '.', sep = ',';
-    int factor = 3;
-    int len = result.length();
-    if (len % 3 != 0) {
+    char dot = '.', sep = ',', knownType, category;
+    int len = result.length(), factor = 3;
+    if (len % factor != 0) {
       return null;
     }
+    int numberOfFactor = len / factor;
     StringBuilder sb = new StringBuilder();
-    char type = result.charAt(0);
-    char[] chars = new char[2];
-    sb.append(type);
-    sb.append(dot);
-    chars[0] = result.charAt(1);
-    chars[1] = result.charAt(2);
-    sb.append(char2Int(chars));
 
-    for (int i = 1; i < len / factor; i++) {
+    category = sequencedCategories[0];
+    sb.append(category);
+    sb.append(dot);
+    char[] chars = new char[2];
+    boolean hasNoResultInThisRound = true;
+    for (int i = 0; i < numberOfFactor; i++) {
+      knownType = result.charAt(i * factor);
+      if (category == knownType) {
+        chars[0] = result.charAt(i * factor + 1);
+        chars[1] = result.charAt(i * factor + 2);
+        sb.append(char2Int(chars));
+        hasNoResultInThisRound = false;
+        break;
+      }
+    }
+    if (hasNoResultInThisRound) {
+      sb.append(EMPTY_CATEGORY_RESULT);
+    }
+
+    for (int i = 1; i < sequencedCategories.length; i++) {
+      hasNoResultInThisRound = true;
+      category = sequencedCategories[i];
       sb.append(sep);
-      type = result.charAt(i * factor);
-      sb.append(type);
+      sb.append(category);
       sb.append(dot);
-      chars[0] = result.charAt(i * factor + 1);
-      chars[1] = result.charAt(i * factor + 2);
-      sb.append(char2Int(chars));
+      for (int j = 0; j < numberOfFactor; j++) {
+        knownType = result.charAt(j * factor);
+        if (category == knownType) {
+          chars[0] = result.charAt(j * factor + 1);
+          chars[1] = result.charAt(j * factor + 2);
+          sb.append(char2Int(chars));
+          hasNoResultInThisRound = false;
+          break;
+        }
+      }
+      if (hasNoResultInThisRound) {
+        sb.append(EMPTY_CATEGORY_RESULT);
+      }
     }
     return sb.toString();
   }
@@ -147,8 +178,10 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
   }
 
   public static void main(String[] args) {
-    String result = "z3fa03b05";
-    System.out.println(extractResult(result));
+    String defaultList = "zabcd";
+    String result = "a14d0fz2e";
+    HttpPGetServerHandler httpPGetServerHandler = new HttpPGetServerHandler(defaultList);
+    System.out.println(httpPGetServerHandler.extractResult(result));
   }
 
 }

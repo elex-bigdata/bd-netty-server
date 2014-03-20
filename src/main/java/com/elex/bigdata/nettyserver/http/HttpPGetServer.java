@@ -62,7 +62,7 @@ public class HttpPGetServer {
   }
 
   public static void main(String[] args) throws Exception {
-    if (ArrayUtils.isEmpty(args)) {
+    if (ArrayUtils.isEmpty(args) || args.length < 2) {
       throw new Exception("Parameters is not enough(P1=Port, P2=String of sequenced categories).");
     }
     int port = Integer.parseInt(args[0]);

@@ -14,5 +14,11 @@ else
 fi
 
 proc=`ps aux | grep ${jar_name} | grep ${port} | awk '{print $2}'`
-echo "Shutdown exists netty server"
+if [ "" = "${proc}" ];then
+  echo "Startup netty server directly."
+else
+  echo "Shutdown exists netty server."
+  kill -9 ${proc}
+fi
+
 nohup ${java_bin}/java -jar ${jar_file} ${port} ${pattern} &

@@ -21,4 +21,4 @@ else
   kill -9 ${proc}
 fi
 
-nohup ${java_bin}/java -jar ${jar_file} ${port} ${pattern} &
+nohup ${java_bin}/java -jar ${jar_file} ${port} ${pattern} /data/netty_server/logs/run.${port}.log &

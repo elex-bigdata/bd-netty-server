@@ -39,19 +39,38 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.DailyRollingFileAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
+import java.io.IOException;
 
 public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
+
+  private final Logger LOGGER = Logger.getLogger(HttpPGetServerHandler.class);
 
   private final String EMPTY_CATEGORY_RESULT = "00";
 
   private char[] sequencedCategories;
 
-  public HttpPGetServerHandler(String sequencedCatetoriesString) {
+  public HttpPGetServerHandler(String sequencedCatetoriesString, String outFilePath) throws IOException {
     this.sequencedCategories = sequencedCatetoriesString.toCharArray();
-  }
+    LOGGER.removeAllAppenders();
+    PatternLayout layout = new PatternLayout();
+    String conversionPattern = "%d{yyyyMMddHHmmss} %-5p%c{2}: %m%n";
+    layout.setConversionPattern(conversionPattern);
+    FileAppender appender = new DailyRollingFileAppender();
+    appender.setLayout(layout);
+    appender.setFile(outFilePath);
+    appender.setEncoding("UTF-8");
+    appender.activateOptions();
+    appender.setAppend(true);
+    LOGGER.setLevel(Level.INFO);
+    LOGGER.addAppender(appender);
 
-  private static final Logger LOGGER = Logger.getLogger(HttpPGetServerHandler.class);
+  }
 
   private boolean isValid(String uri) {
     return StringUtils.isNotBlank(uri) && !NettyServerConstants.USELESS_URI.equals(uri);
@@ -175,13 +194,6 @@ public class HttpPGetServerHandler extends ChannelInboundHandlerAdapter {
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     cause.printStackTrace();
     ctx.close();
-  }
-
-  public static void main(String[] args) {
-    String defaultList = "zabcd";
-    String result = "a14d0fz2e";
-    HttpPGetServerHandler httpPGetServerHandler = new HttpPGetServerHandler(defaultList);
-    System.out.println(httpPGetServerHandler.extractResult(result));
   }
 
 }

@@ -35,10 +35,12 @@ public class HttpPGetServer {
 
   private final int port;
   private final String sequencedCategories;
+  private final String logFileOut;
 
-  public HttpPGetServer(int port, String sequencedCategories) {
+  public HttpPGetServer(int port, String sequencedCategories, String logFileOut) {
     this.port = port;
     this.sequencedCategories = sequencedCategories;
+    this.logFileOut = logFileOut;
   }
 
   public void run() throws Exception {
@@ -49,7 +51,7 @@ public class HttpPGetServer {
       ServerBootstrap b = new ServerBootstrap();
       b.option(ChannelOption.SO_BACKLOG, 1024);
       b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-       .childHandler(new HttpPGetServerInitializer(sequencedCategories));
+       .childHandler(new HttpPGetServerInitializer(sequencedCategories, logFileOut));
 
       LOGGER.info("Server(" + port + ") started.");
       Channel ch = b.bind(port).sync().channel();
@@ -62,15 +64,20 @@ public class HttpPGetServer {
   }
 
   public static void main(String[] args) throws Exception {
-    if (ArrayUtils.isEmpty(args) || args.length < 2) {
-      throw new Exception("Parameters is not enough(P1=Port, P2=String of sequenced categories).");
+    if (ArrayUtils.isEmpty(args) || args.length < 3) {
+      throw new Exception(
+        "Parameters is not enough(P1=Port, P2=String of sequenced categories, P3=Log file output path).");
     }
     int port = Integer.parseInt(args[0]);
     String sequencedCategories = StringUtils.trimToNull(args[1]);
+    String logFileOut = StringUtils.trimToNull(args[2]);
     if (StringUtils.isBlank(sequencedCategories)) {
       throw new Exception("Sequenced categories must be assigned.");
     }
+    if (StringUtils.isBlank(logFileOut)) {
+      throw new Exception("Log file cannot be null.");
+    }
     NettyServerConstants.CURRENT_PORT = port;
-    new HttpPGetServer(port, sequencedCategories).run();
+    new HttpPGetServer(port, sequencedCategories, logFileOut).run();
   }
 }
